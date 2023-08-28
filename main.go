@@ -1,13 +1,9 @@
 package main
 
 import (
-	"fmt"
-
-	"github.com/Guilherme415/cep-api/internal/cmd"
+	"github.com/Guilherme415/cep-api/cmd"
 )
 
 func main() {
-	fmt.Println("Hello world!")
-
 	cmd.StartApi()
 }
