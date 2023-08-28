@@ -1,9 +1,13 @@
 package controller
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
 
 type IHealthController interface {
-	Health(w http.ResponseWriter, r *http.Request)
+	Health(c *gin.Context)
 }
 
 type HealthController struct{}
@@ -12,7 +16,6 @@ func NewHealthController() IHealthController {
 	return &HealthController{}
 }
 
-func (h *HealthController) Health(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("it's ok around here!"))
+func (h *HealthController) Health(c *gin.Context) {
+	c.JSON(http.StatusOK, "it's ok around here!")
 }

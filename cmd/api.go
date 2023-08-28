@@ -1,14 +1,14 @@
 package cmd
 
 import (
-	"net/http"
-
-	"github.com/Guilherme415/cep-api/internal/api/controller"
+	"github.com/Guilherme415/cep-api/internal/api"
+	"github.com/gin-gonic/gin"
 )
 
 func StartApi() {
-	healthController := controller.NewHealthController()
-	http.HandleFunc("/health", healthController.Health)
+	server := gin.Default()
 
-	http.ListenAndServe(":8080", nil)
+	api.Router(server)
+
+	server.Run()
 }
