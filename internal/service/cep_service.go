@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -11,7 +12,7 @@ import (
 )
 
 type ICepService interface {
-	GetAddressDeitalsByCEP(cep string, responseChan chan<- response.GetAddressDeitalsByCEPResponse)
+	GetAddressDeitalsByCEP(cep string, ctx context.Context, responseChan chan<- response.GetAddressDeitalsByCEPResponse)
 }
 
 type CepService[T dto.Cep_types] struct {
@@ -22,12 +23,11 @@ func NewCepService[T dto.Cep_types](url string) ICepService {
 	return &CepService[T]{url}
 }
 
-func (c *CepService[T]) GetAddressDeitalsByCEP(cep string, responseChan chan<- response.GetAddressDeitalsByCEPResponse) {
-	response := response.GetAddressDeitalsByCEPResponse{}
-
+func (c *CepService[T]) GetAddressDeitalsByCEP(cep string, ctx context.Context, responseChan chan<- response.GetAddressDeitalsByCEPResponse) {
+	var requestResponse T
 	url := strings.Replace(c.url, "?", cep, -1)
 
-	request, err := http.NewRequest(http.MethodGet, url, nil)
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return
 	}
@@ -45,10 +45,12 @@ func (c *CepService[T]) GetAddressDeitalsByCEP(cep string, responseChan chan<- r
 		return
 	}
 
-	err = json.Unmarshal(body, &response)
+	err = json.Unmarshal(body, &requestResponse)
 	if err != nil {
 		return
 	}
+
+	response := dto.MapperToCepResponse[T](requestResponse)
 
 	responseChan <- response
 }

@@ -1,6 +1,7 @@
 package usecases
 
 import (
+	"context"
 	"errors"
 	"time"
 
@@ -27,8 +28,10 @@ func (cp *CepUseCase) GetAddressDeitalsByCEP(cep string) (response.GetAddressDei
 func (cp *CepUseCase) getFirstCepResponse(cep string) (response.GetAddressDeitalsByCEPResponse, error) {
 	responseChan := make(chan response.GetAddressDeitalsByCEPResponse)
 
+	ctx := context.Background()
+	defer ctx.Done()
 	for _, service := range cp.cepServices {
-		go service.GetAddressDeitalsByCEP(cep, responseChan)
+		go service.GetAddressDeitalsByCEP(cep, ctx, responseChan)
 	}
 
 	ticker := time.NewTicker(1 * time.Second)
