@@ -170,3 +170,49 @@ func TestGetStructFieldsNames(t *testing.T) {
 		require.Equal(t, len(expectedFieldNames), len(fieldNames))
 	})
 }
+
+func TestReplaceLastNonZeroDigitWithZero(t *testing.T) {
+	t.Run("Success - ReplaceLastNonZeroDigitWithZero should change last digit to zero", func(t *testing.T) {
+		expectedResult := "04726-900"
+		stringTest := "04726-906"
+
+		result := utils.ReplaceLastNonZeroDigitWithZero(stringTest)
+
+		require.Equal(t, expectedResult, result)
+	})
+
+	t.Run("Success - ReplaceLastNonZeroDigitWithZero should return lasts digits to zero and not change '-'", func(t *testing.T) {
+		expectedResult := "04700-000"
+		stringTest := "04720-000"
+
+		result := utils.ReplaceLastNonZeroDigitWithZero(stringTest)
+
+		require.Equal(t, expectedResult, result)
+	})
+}
+
+func TestHasNonZeroAndHyphenCharacter(t *testing.T) {
+	t.Run("Success - HasNonZeroAndHyphenCharacter should return true when has non zero or hyphens caracters", func(t *testing.T) {
+		stringTest := "04726-906"
+
+		result := utils.HasNonZeroAndHyphenCharacter(stringTest)
+
+		require.True(t, result)
+	})
+
+	t.Run("Success - HasNonZeroAndHyphenCharacter should return false when only has zero caracters", func(t *testing.T) {
+		stringTest := "0000000"
+
+		result := utils.HasNonZeroAndHyphenCharacter(stringTest)
+
+		require.False(t, result)
+	})
+
+	t.Run("Success - HasNonZeroAndHyphenCharacter should return false when only has zero and hyphens caracters", func(t *testing.T) {
+		stringTest := "00000-000"
+
+		result := utils.HasNonZeroAndHyphenCharacter(stringTest)
+
+		require.False(t, result)
+	})
+}

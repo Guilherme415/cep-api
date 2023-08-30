@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/Guilherme415/cep-api/internal/api/response"
+	"github.com/Guilherme415/cep-api/internal/dto"
 	"github.com/Guilherme415/cep-api/internal/service"
 )
 
@@ -26,7 +27,7 @@ func (cp *CepUseCase) GetAddressDeitalsByCEP(cep string) (response.GetAddressDei
 }
 
 func (cp *CepUseCase) getFirstCepResponse(cep string) (response.GetAddressDeitalsByCEPResponse, error) {
-	responseChan := make(chan response.GetAddressDeitalsByCEPResponse)
+	responseChan := make(chan dto.CepServiceResponse)
 
 	ctx := context.Background()
 	defer ctx.Done()
@@ -34,12 +35,17 @@ func (cp *CepUseCase) getFirstCepResponse(cep string) (response.GetAddressDeital
 		go service.GetAddressDeitalsByCEP(cep, ctx, responseChan)
 	}
 
+	emptyStruct := dto.CepServiceResponse{}
+
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
 	for {
 		select {
 		case resp := <-responseChan:
-			return resp, nil
+			if resp == emptyStruct {
+				continue
+			}
+			return resp.GetAddressDeitalsByCEPResponse, resp.Error
 
 		case <-ticker.C:
 			return response.GetAddressDeitalsByCEPResponse{}, errors.New("timeout has occured")

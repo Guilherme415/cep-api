@@ -3,16 +3,17 @@ package service
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"strings"
 
-	"github.com/Guilherme415/cep-api/internal/api/response"
 	"github.com/Guilherme415/cep-api/internal/dto"
+	"github.com/Guilherme415/cep-api/utils"
 )
 
 type ICepService interface {
-	GetAddressDeitalsByCEP(cep string, ctx context.Context, responseChan chan<- response.GetAddressDeitalsByCEPResponse)
+	GetAddressDeitalsByCEP(cep string, ctx context.Context, responseChan chan<- dto.CepServiceResponse)
 }
 
 type CepService[T dto.Cep_types] struct {
@@ -24,7 +25,7 @@ func NewCepService[T dto.Cep_types](url string, client IClient) ICepService {
 	return &CepService[T]{url, client}
 }
 
-func (c *CepService[T]) GetAddressDeitalsByCEP(cep string, ctx context.Context, responseChan chan<- response.GetAddressDeitalsByCEPResponse) {
+func (c *CepService[T]) GetAddressDeitalsByCEP(cep string, ctx context.Context, responseChan chan<- dto.CepServiceResponse) {
 	var requestResponse T
 	url := c.formatUrlToFindCep(cep)
 
@@ -39,6 +40,11 @@ func (c *CepService[T]) GetAddressDeitalsByCEP(cep string, ctx context.Context, 
 	}
 
 	if resp.StatusCode != http.StatusOK {
+		if resp.StatusCode == http.StatusNotFound {
+			c.processNotFoundStatus(cep, ctx, responseChan)
+			return
+		}
+
 		return
 	}
 
@@ -55,10 +61,25 @@ func (c *CepService[T]) GetAddressDeitalsByCEP(cep string, ctx context.Context, 
 	}
 
 	response := dto.MapperToCepResponse[T](requestResponse)
+	cepResponse := dto.CepServiceResponse{
+		GetAddressDeitalsByCEPResponse: response,
+	}
 
-	responseChan <- response
+	responseChan <- cepResponse
 }
 
 func (c *CepService[T]) formatUrlToFindCep(cep string) string {
 	return strings.Replace(c.url, "?", cep, -1)
+}
+
+func (c *CepService[T]) processNotFoundStatus(cep string, ctx context.Context, responseChan chan<- dto.CepServiceResponse) {
+	if utils.HasNonZeroAndHyphenCharacter(cep) {
+		cep = utils.ReplaceLastNonZeroDigitWithZero(cep)
+		c.GetAddressDeitalsByCEP(cep, ctx, responseChan)
+		return
+	}
+
+	cepResponse := dto.CepServiceResponse{}
+	cepResponse.Error = fmt.Errorf("cep not found, cep: %s", cep)
+	responseChan <- cepResponse
 }

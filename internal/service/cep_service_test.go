@@ -11,7 +11,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Guilherme415/cep-api/internal/api/response"
 	"github.com/Guilherme415/cep-api/internal/dto"
 	"github.com/Guilherme415/cep-api/internal/mock"
 	"github.com/Guilherme415/cep-api/internal/service"
@@ -28,7 +27,7 @@ func TestGetAddressDeitalsByCEP(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	fakeGetAddressDeitalsByCEPResponse := response.GetAddressDeitalsByCEPResponse{}
+	fakeGetAddressDeitalsByCEPResponse := dto.CepServiceResponse{}
 	gofakeit.Struct(&fakeGetAddressDeitalsByCEPResponse)
 
 	fakeCepResult := dto.Viacep{
@@ -47,7 +46,7 @@ func TestGetAddressDeitalsByCEP(t *testing.T) {
 	tests := []struct {
 		Description      string
 		Client           service.IClient
-		ExpectedResponse response.GetAddressDeitalsByCEPResponse
+		ExpectedResponse dto.CepServiceResponse
 		ExpectedError    error
 	}{
 		{
@@ -58,27 +57,34 @@ func TestGetAddressDeitalsByCEP(t *testing.T) {
 		{
 			Description:      "Should return an error when an internal server error ocurred",
 			Client:           &mock.IClientSpy{StatusCode: http.StatusInternalServerError, Body: io.NopCloser(bytes.NewReader(fakeErrorBody))},
-			ExpectedResponse: response.GetAddressDeitalsByCEPResponse{},
+			ExpectedResponse: dto.CepServiceResponse{},
 			ExpectedError:    fakeError,
 		},
 		{
 			Description:      "Should return an error when unmarshal invalid body",
 			Client:           &mock.IClientSpy{StatusCode: http.StatusOK, Body: io.NopCloser(strings.NewReader("blabla"))},
-			ExpectedResponse: response.GetAddressDeitalsByCEPResponse{},
+			ExpectedResponse: dto.CepServiceResponse{},
 			ExpectedError:    fakeError,
 		},
 		{
 			Description:      "Should return an error when an error with http client",
 			Client:           &mock.IClientSpy{Err: fakeError},
-			ExpectedResponse: response.GetAddressDeitalsByCEPResponse{},
+			ExpectedResponse: dto.CepServiceResponse{},
 			ExpectedError:    fakeError,
+		},
+		{
+			Description: "Should return an error in cepServiceResponse when cep not found",
+			Client:      &mock.IClientSpy{StatusCode: http.StatusNotFound, Body: nil},
+			ExpectedResponse: dto.CepServiceResponse{
+				Error: errors.New("cep not found, cep: 00000-000"),
+			},
 		},
 	}
 	for _, test := range tests {
 		t.Run(test.Description, func(t *testing.T) {
 			cepService := service.NewCepService[dto.Viacep]("abc/?/json/", test.Client)
 
-			chanResp := make(chan response.GetAddressDeitalsByCEPResponse)
+			chanResp := make(chan dto.CepServiceResponse)
 			ctx := context.Background()
 
 			go cepService.GetAddressDeitalsByCEP("04726-906", ctx, chanResp)
@@ -90,7 +96,7 @@ func TestGetAddressDeitalsByCEP(t *testing.T) {
 	}
 }
 
-func listenChan(chanResp <-chan response.GetAddressDeitalsByCEPResponse) (response.GetAddressDeitalsByCEPResponse, error) {
+func listenChan(chanResp <-chan dto.CepServiceResponse) (dto.CepServiceResponse, error) {
 	ticker := time.NewTicker(100 * time.Microsecond)
 	defer ticker.Stop()
 	for {
@@ -98,7 +104,7 @@ func listenChan(chanResp <-chan response.GetAddressDeitalsByCEPResponse) (respon
 		case resp := <-chanResp:
 			return resp, nil
 		case <-ticker.C:
-			return response.GetAddressDeitalsByCEPResponse{}, errors.New("timeout has occured")
+			return dto.CepServiceResponse{}, errors.New("timeout has occured")
 		}
 	}
 }

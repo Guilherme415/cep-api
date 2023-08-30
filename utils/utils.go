@@ -58,3 +58,26 @@ func GetStructFieldsNames(obj interface{}) []string {
 
 	return fieldsName
 }
+
+func ReplaceLastNonZeroDigitWithZero(input string) string {
+	runes := []rune(input)
+	length := len(runes) - 1
+
+	for i := length; i >= 0; i-- {
+		if runes[i] != '0' && runes[i] != '-' {
+			runes[i] = '0'
+			break
+		}
+	}
+
+	return string(runes)
+}
+
+func HasNonZeroAndHyphenCharacter(input string) bool {
+	for _, char := range input {
+		if char != '0' && char != '-' {
+			return true
+		}
+	}
+	return false
+}
