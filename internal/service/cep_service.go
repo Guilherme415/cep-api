@@ -16,25 +16,29 @@ type ICepService interface {
 }
 
 type CepService[T dto.Cep_types] struct {
-	url string
+	url    string
+	client IClient
 }
 
-func NewCepService[T dto.Cep_types](url string) ICepService {
-	return &CepService[T]{url}
+func NewCepService[T dto.Cep_types](url string, client IClient) ICepService {
+	return &CepService[T]{url, client}
 }
 
 func (c *CepService[T]) GetAddressDeitalsByCEP(cep string, ctx context.Context, responseChan chan<- response.GetAddressDeitalsByCEPResponse) {
 	var requestResponse T
-	url := strings.Replace(c.url, "?", cep, -1)
+	url := c.formatUrlToFindCep(cep)
 
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return
 	}
 
-	client := http.Client{}
-	resp, err := client.Do(request)
+	resp, err := c.client.Do(request)
 	if err != nil {
+		return
+	}
+
+	if resp.StatusCode != http.StatusOK {
 		return
 	}
 
@@ -53,4 +57,8 @@ func (c *CepService[T]) GetAddressDeitalsByCEP(cep string, ctx context.Context, 
 	response := dto.MapperToCepResponse[T](requestResponse)
 
 	responseChan <- response
+}
+
+func (c *CepService[T]) formatUrlToFindCep(cep string) string {
+	return strings.Replace(c.url, "?", cep, -1)
 }

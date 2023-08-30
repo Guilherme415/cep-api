@@ -12,10 +12,6 @@ type Cep_types interface {
 	Viacep | BrasilApi | CdnApiCep
 }
 
-func ConvertToResponse[T Cep_types]() response.GetAddressDeitalsByCEPResponse {
-	return response.GetAddressDeitalsByCEPResponse{}
-}
-
 type Viacep struct {
 	Cep         string `json:"cep"`
 	Logradouro  string `json:"logradouro" type:"Street"`
