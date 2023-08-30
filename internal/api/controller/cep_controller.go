@@ -37,9 +37,7 @@ func (cp *CepController) GetAddressDeitalsByCEP(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"Response": addressDetails,
-	})
+	c.JSON(http.StatusOK, addressDetails)
 }
 
 func isCepInvalid(cep string) bool {
