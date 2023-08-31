@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"encoding/json"
-	"fmt"
+	"errors"
 	"io"
 	"net/http"
 	"strings"
@@ -87,6 +87,6 @@ func (c *CepService[T]) processNotFoundStatus(cep string, ctx context.Context, r
 	}
 
 	cepResponse := dto.CepServiceResponse{}
-	cepResponse.Error = fmt.Errorf("cep not found, cep: %s", cep)
+	cepResponse.Error = errors.New("cep not found")
 	responseChan <- cepResponse
 }

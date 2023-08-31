@@ -69,8 +69,8 @@ func TestCepController(t *testing.T) {
 		require.Equal(t, http.StatusBadRequest, w.Code)
 	})
 
-	t.Run("Fail - GetAddressDeitalsByCEP should return 500 when an internal error occurred", func(t *testing.T) {
-		expectedError := errors.New("can't connect DB")
+	t.Run("Fail - GetAddressDeitalsByCEP should return 500 when an invalid cep occurred", func(t *testing.T) {
+		expectedError := errors.New("cep not found")
 
 		cepUseCase := &mock.ICepUseCaseSpy{GetAddressDeitalsByCEPError: expectedError}
 

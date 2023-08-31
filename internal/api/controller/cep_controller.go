@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/Guilherme415/cep-api/internal/api/response"
@@ -39,15 +38,20 @@ func (cp *CepController) GetAddressDeitalsByCEP(c *gin.Context) {
 	cep := c.Param("cep")
 	if isCepInvalid(cep) {
 		c.JSON(http.StatusBadRequest, response.ErrorResponse{
-			Message: "param cep is requirer",
+			Message: "parâmetro cep é obrigatório e deve possuir de 5 a 9 dígitos",
 		})
 		return
 	}
 
 	addressDetails, err := cp.cepUseCase.GetAddressDeitalsByCEP(cep)
 	if err != nil {
+		message := "um erro interno ocorreu"
+		if err.Error() == "cep not found" {
+			message = "CEP inválido"
+		}
+
 		c.JSON(http.StatusInternalServerError, response.ErrorResponse{
-			Message: fmt.Sprintf("An internal error occured, details: %s", err.Error()),
+			Message: message,
 		})
 		return
 	}
@@ -56,7 +60,7 @@ func (cp *CepController) GetAddressDeitalsByCEP(c *gin.Context) {
 }
 
 func isCepInvalid(cep string) bool {
-	maxCepLength := 15
+	maxCepLength := 9
 	minCepLength := 5
 
 	return cep == "" || len(cep) > maxCepLength || len(cep) < minCepLength

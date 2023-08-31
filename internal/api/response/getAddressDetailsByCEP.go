@@ -1,8 +1,8 @@
 package response
 
 type GetAddressDeitalsByCEPResponse struct {
-	Street       string `json:"street"`
-	Neighborhood string `json:"neighborhood"`
-	City         string `json:"city"`
-	State        string `json:"state"`
+	Street       string `json:"rua"`
+	Neighborhood string `json:"bairro"`
+	City         string `json:"cidade"`
+	State        string `json:"estado"`
 }

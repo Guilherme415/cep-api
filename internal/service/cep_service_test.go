@@ -76,7 +76,7 @@ func TestGetAddressDeitalsByCEP(t *testing.T) {
 			Description: "Should return an error in cepServiceResponse when cep not found",
 			Client:      &mock.IClientSpy{StatusCode: http.StatusNotFound, Body: nil},
 			ExpectedResponse: dto.CepServiceResponse{
-				Error: errors.New("cep not found, cep: 00000-000"),
+				Error: errors.New("cep not found"),
 			},
 		},
 	}
