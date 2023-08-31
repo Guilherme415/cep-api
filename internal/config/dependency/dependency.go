@@ -7,6 +7,7 @@ import (
 	"github.com/Guilherme415/cep-api/internal/dto"
 	"github.com/Guilherme415/cep-api/internal/service"
 	usecases "github.com/Guilherme415/cep-api/internal/use_cases"
+	"github.com/rs/zerolog/log"
 )
 
 var (
@@ -14,6 +15,7 @@ var (
 )
 
 func LoadDependencies() {
+	log.Info().Msg("loading dependencies!")
 	defaultClient := http.DefaultClient
 
 	viacepService := service.NewCepService[dto.Viacep]("https://viacep.com.br/ws/?/json/", defaultClient)

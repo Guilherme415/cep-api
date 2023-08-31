@@ -11,6 +11,7 @@ import (
 	"github.com/Guilherme415/cep-api/internal/dto"
 	"github.com/Guilherme415/cep-api/internal/dto/mapper"
 	"github.com/Guilherme415/cep-api/utils"
+	"github.com/rs/zerolog/log"
 )
 
 type ICepService interface {
@@ -32,11 +33,13 @@ func (c *CepService[T]) GetAddressDeitalsByCEP(cep string, ctx context.Context, 
 
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
+		log.Err(err).Msgf("GetAddressDeitalsByCEP - Error to create request, url: %s", url)
 		return
 	}
 
 	resp, err := c.client.Do(request)
 	if err != nil {
+		log.Err(err).Msgf("GetAddressDeitalsByCEP - Error to client execute, url: %s", url)
 		return
 	}
 
@@ -46,6 +49,7 @@ func (c *CepService[T]) GetAddressDeitalsByCEP(cep string, ctx context.Context, 
 			return
 		}
 
+		log.Info().Msgf("GetAddressDeitalsByCEP - Status code different from 200 and 404, statusCode: %d, url: %s", resp.StatusCode, url)
 		return
 	}
 
@@ -53,11 +57,13 @@ func (c *CepService[T]) GetAddressDeitalsByCEP(cep string, ctx context.Context, 
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
+		log.Err(err).Msgf("GetAddressDeitalsByCEP - Error to read body, url: %s", url)
 		return
 	}
 
 	err = json.Unmarshal(body, &requestResponse)
 	if err != nil {
+		log.Err(err).Msgf("GetAddressDeitalsByCEP - Error to unmarshal body, url: %s", url)
 		return
 	}
 

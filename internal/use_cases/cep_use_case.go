@@ -8,6 +8,7 @@ import (
 	"github.com/Guilherme415/cep-api/internal/api/response"
 	"github.com/Guilherme415/cep-api/internal/dto"
 	"github.com/Guilherme415/cep-api/internal/service"
+	"github.com/rs/zerolog/log"
 )
 
 type ICepUseCase interface {
@@ -48,6 +49,7 @@ func (cp *CepUseCase) getFirstCepResponse(cep string) (response.GetAddressDeital
 			return resp.GetAddressDeitalsByCEPResponse, resp.Error
 
 		case <-ticker.C:
+			log.Info().Msgf("getFirstCepResponse - timeout error to cep: %s", cep)
 			return response.GetAddressDeitalsByCEPResponse{}, errors.New("timeout has occured")
 		}
 	}
