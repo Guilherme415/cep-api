@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	usecases "github.com/Guilherme415/cep-api/internal/api/use_cases"
+	usecases "github.com/Guilherme415/cep-api/internal/use_cases"
 	"github.com/gin-gonic/gin"
 )
 

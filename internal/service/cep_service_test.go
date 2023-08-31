@@ -97,7 +97,7 @@ func TestGetAddressDeitalsByCEP(t *testing.T) {
 }
 
 func listenChan(chanResp <-chan dto.CepServiceResponse) (dto.CepServiceResponse, error) {
-	ticker := time.NewTicker(100 * time.Microsecond)
+	ticker := time.NewTicker(100 * time.Millisecond)
 	defer ticker.Stop()
 	for {
 		select {

@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/Guilherme415/cep-api/internal/api/controller"
-	usecases "github.com/Guilherme415/cep-api/internal/api/use_cases"
 	"github.com/Guilherme415/cep-api/internal/dto"
 	"github.com/Guilherme415/cep-api/internal/service"
+	usecases "github.com/Guilherme415/cep-api/internal/use_cases"
 )
 
 var (

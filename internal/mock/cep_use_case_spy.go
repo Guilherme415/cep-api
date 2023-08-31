@@ -2,7 +2,7 @@ package mock
 
 import (
 	"github.com/Guilherme415/cep-api/internal/api/response"
-	usecases "github.com/Guilherme415/cep-api/internal/api/use_cases"
+	usecases "github.com/Guilherme415/cep-api/internal/use_cases"
 )
 
 type ICepUseCaseSpy struct {
