@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/Guilherme415/cep-api/internal/api/response"
 	usecases "github.com/Guilherme415/cep-api/internal/use_cases"
 	"github.com/gin-gonic/gin"
 )
@@ -20,19 +21,33 @@ func NewCepController(cepUseCase usecases.ICepUseCase) ICepController {
 	return &CepController{cepUseCase}
 }
 
+// ShowAccount godoc
+// @Summary      Get address details by CEP
+// @Description  Api to get address details by cep. This Api try to get the infos in one or more APIs and return the fastest
+// @Description  If the Cep is invalid, the api will replace the lasts digits to 0 until find some valid Cep
+// @Description  If does not find some valid cep, it will return an internal server error
+// @Tags         cep
+// @Accept       json
+// @Produce      json
+// @Param        cep   path      string  true  "CEP"
+// @Success      200  {object}  response.GetAddressDeitalsByCEPResponse
+// @Failure      400  {object}  response.ErrorResponse
+// @Failure      500  {object}  response.ErrorResponse
+// @Router       /cep/{cep} [get]
+// @Security ApiKeyAuth
 func (cp *CepController) GetAddressDeitalsByCEP(c *gin.Context) {
 	cep := c.Param("cep")
 	if isCepInvalid(cep) {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"Error": "param cep is requirer",
+		c.JSON(http.StatusBadRequest, response.ErrorResponse{
+			Message: "param cep is requirer",
 		})
 		return
 	}
 
 	addressDetails, err := cp.cepUseCase.GetAddressDeitalsByCEP(cep)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"Error": fmt.Sprintf("An internal error occured, details: %s", err.Error()),
+		c.JSON(http.StatusInternalServerError, response.ErrorResponse{
+			Message: fmt.Sprintf("An internal error occured, details: %s", err.Error()),
 		})
 		return
 	}

@@ -8,7 +8,9 @@ import (
 )
 
 var (
+	Host     string
 	LogLevel string
+	Port     string
 	Token    string
 )
 
@@ -21,4 +23,14 @@ func LoadEnvs() {
 	LogLevel = os.Getenv("LOG_LEVEL")
 
 	Token = os.Getenv("TOKEN")
+
+	Host = os.Getenv("HOST")
+	if Host == "" {
+		Host = "localhost"
+	}
+
+	Port = os.Getenv("PORT")
+	if Port == "" {
+		Port = ":8080"
+	}
 }

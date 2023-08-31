@@ -1,0 +1,67 @@
+basePath: /
+definitions:
+  response.ErrorResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  response.GetAddressDeitalsByCEPResponse:
+    properties:
+      city:
+        type: string
+      neighborhood:
+        type: string
+      state:
+        type: string
+      street:
+        type: string
+    type: object
+info:
+  contact:
+    name: Guilherme Daniel
+    url: https://github.com/Guilherme415
+  description: CEP API
+  termsOfService: http://swagger.io/terms/
+  title: Cep API
+  version: "1.0"
+paths:
+  /cep/{cep}:
+    get:
+      consumes:
+      - application/json
+      description: |-
+        Api to get address details by cep. This Api try to get the infos in one or more APIs and return the fastest
+        If the Cep is invalid, the api will replace the lasts digits to 0 until find some valid Cep
+        If does not find some valid cep, it will return an internal server error
+      parameters:
+      - description: CEP
+        in: path
+        name: cep
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetAddressDeitalsByCEPResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get address details by CEP
+      tags:
+      - cep
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
