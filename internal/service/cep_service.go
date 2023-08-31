@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/Guilherme415/cep-api/internal/dto"
+	"github.com/Guilherme415/cep-api/internal/dto/mapper"
 	"github.com/Guilherme415/cep-api/utils"
 )
 
@@ -60,7 +61,7 @@ func (c *CepService[T]) GetAddressDeitalsByCEP(cep string, ctx context.Context, 
 		return
 	}
 
-	response := dto.MapperToCepResponse[T](requestResponse)
+	response := mapper.MapperToCepResponse[T](requestResponse)
 	cepResponse := dto.CepServiceResponse{
 		GetAddressDeitalsByCEPResponse: response,
 	}

@@ -1,13 +1,5 @@
 package dto
 
-import (
-	"fmt"
-	"reflect"
-
-	"github.com/Guilherme415/cep-api/internal/api/response"
-	"github.com/Guilherme415/cep-api/utils"
-)
-
 type Cep_types interface {
 	Viacep | BrasilApi | CdnApiCep
 }
@@ -43,39 +35,4 @@ type CdnApiCep struct {
 	Status     int    `json:"status"`
 	Ok         bool   `json:"ok"`
 	StatusText string `json:"statusText"`
-}
-
-func MapperToCepResponse[T Cep_types](cepType T) response.GetAddressDeitalsByCEPResponse {
-	response := response.GetAddressDeitalsByCEPResponse{}
-
-	structFieldsNames := utils.GetStructFieldsNames(response)
-
-	responseReflected := reflect.ValueOf(&response).Elem()
-
-	cepTypeObj := reflect.ValueOf(&cepType).Elem()
-
-	cepTypeObjType := reflect.TypeOf(cepType)
-	if cepTypeObjType.Kind() != reflect.Struct {
-		fmt.Println("populatingGetNetFileLinesByTag / cepTypeObjType.Kind() != reflect.Struct")
-		return response
-	}
-
-	numFields := cepTypeObj.NumField()
-
-	for _, fieldName := range structFieldsNames {
-		for i := 0; i < numFields; i++ {
-			field := cepTypeObjType.Field(i)
-			fieldValue := cepTypeObj.Field(i)
-
-			tagValue := utils.GetTagValueByField("type", field)
-
-			if tagValue == fieldName {
-				responseField := responseReflected.FieldByName(fieldName)
-
-				utils.SetFieldValue(responseField, fieldValue.String())
-			}
-		}
-	}
-
-	return response
 }
