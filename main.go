@@ -2,12 +2,10 @@ package main
 
 import (
 	"github.com/Guilherme415/cep-api/cmd"
-	"github.com/Guilherme415/cep-api/internal/config/dependency"
-	"github.com/Guilherme415/cep-api/internal/config/env"
+	"github.com/Guilherme415/cep-api/internal/config"
 )
 
 func main() {
-	env.LoadEnvs()
-	dependency.LoadDependencies()
+	config.SetupConfigs()
 	cmd.StartApi()
 }

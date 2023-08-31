@@ -8,7 +8,8 @@ import (
 )
 
 var (
-	Token string
+	LogLevel string
+	Token    string
 )
 
 func LoadEnvs() {
@@ -16,6 +17,8 @@ func LoadEnvs() {
 	if err != nil {
 		fmt.Println("runnning the application without a .env file")
 	}
+
+	LogLevel = os.Getenv("LOG_LEVEL")
 
 	Token = os.Getenv("TOKEN")
 }
