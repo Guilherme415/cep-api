@@ -22,6 +22,11 @@ Aqui está um resumo dos passos envolvidos quando uma requisição é feita para
 8. O cliente recebe a resposta.
 9. A conexão TCP é encerrada.
 
+## Configuração de Ambiente
+
+Renomeie o arquivo `env.example` para `.env` e configure as variáveis de ambiente necessárias conforme sua preferência.
+O token usado na API de busca de endereço está protegido por variável de ambiente
+
 ## Executando a Aplicação
 
 Para executar a aplicação, siga os seguintes passos:
